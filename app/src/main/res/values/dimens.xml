@@ -8,4 +8,5 @@
     <dimen name="max_date_width">100dp</dimen>
     <dimen name="text_size_caption">12sp</dimen>
     <dimen name="text_size_sub_title">18sp</dimen>
+    <dimen name="text_sub_head">16sp</dimen>
 </resources>

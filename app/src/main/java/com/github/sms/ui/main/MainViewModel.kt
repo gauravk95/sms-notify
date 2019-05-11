@@ -3,6 +3,7 @@ package com.github.sms.ui.main
 import android.arch.lifecycle.MutableLiveData
 import com.github.sms.R
 import com.github.sms.base.BaseViewModel
+import com.github.sms.data.models.local.SmsHolder
 import com.github.sms.data.models.local.SmsItem
 import com.github.sms.data.source.repository.AppDataSource
 import com.github.sms.utils.rx.SchedulerProvider
@@ -17,7 +18,7 @@ class MainViewModel constructor(appRepository: AppDataSource,
                                 compositeDisposable: CompositeDisposable) :
         BaseViewModel(appRepository, schedulerProvider, compositeDisposable) {
 
-    val itemList: MutableLiveData<List<SmsItem>> = MutableLiveData()
+    val itemList: MutableLiveData<List<SmsHolder>> = MutableLiveData()
 
     /**
      * Loads the sms

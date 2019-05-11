@@ -16,9 +16,9 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:theme="@style/ToolBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ToolBarStyle" />
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
@@ -26,6 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"/>
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
 </android.support.constraint.ConstraintLayout>

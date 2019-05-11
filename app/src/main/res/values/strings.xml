@@ -9,5 +9,13 @@
     <string name="label_refresh">Refresh</string>
     <string name="permission_denied">Permissions denied!</string>
     <string name="sms_item_clicked">Sms clicked, sent by %s</string>
+    <string name="time_zero_hour_ago">0 hours ago</string>
+    <string name="time_one_hour_ago">1 hours ago</string>
+    <string name="time_two_hour_ago">2 hours ago</string>
+    <string name="time_three_hour_ago">3 hours ago</string>
+    <string name="time_six_hour_ago">6 hours ago</string>
+    <string name="time_twelve_hour_ago">12 hours ago</string>
+    <string name="time_one_day_ago">1 day ago</string>
+    <string name="time_other_ago">Others</string>
 
 </resources>

@@ -13,19 +13,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.github.sms.data.source.repository
-
-import com.github.sms.data.models.local.SmsHolder
-import com.github.sms.data.models.local.SmsItem
-
-import io.reactivex.Flowable
+package com.github.sms.data.models.local
 
 /**
  * Created by gk
  */
+data class SmsHeader(
+        val id: String,
+        val nameId: Int) : SmsHolder {
 
-interface AppDataSource {
-
-    fun getItemList() : Flowable<List<SmsHolder>>
+    override fun getViewType(): Int {
+        return SmsView.HEADER.ordinal
+    }
 
 }

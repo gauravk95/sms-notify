@@ -28,7 +28,7 @@ import com.github.sms.R
 import com.github.sms.base.BaseFragment
 import com.github.sms.databinding.FragmentMainBinding
 import com.github.sms.di.factory.AppViewModelFactory
-import com.github.sms.ui.adapter.MainItemListAdapter
+import com.github.sms.ui.adapter.SmsItemListAdapter
 import com.github.sms.utils.AppConstants
 import com.github.sms.utils.PermissionsUtil
 import com.github.sms.utils.ext.getViewModel
@@ -60,7 +60,7 @@ class MainFragment : BaseFragment() {
         activityComponent.inject(this)
 
         //create the adapter
-        val adapter = MainItemListAdapter {
+        val adapter = SmsItemListAdapter {
             if (it != null) {
                 showToastMessage(String.format(getString(R.string.sms_item_clicked), it.address))
                 //TODO: call the mainViewModel to perform some useful action, like show full sms in other screen
@@ -81,7 +81,7 @@ class MainFragment : BaseFragment() {
             PermissionsUtil.requestSmsPermissions(this, AppConstants.PERM_SMS_REQUEST_CODE)
     }
 
-    private fun subscribeUi(adapter: MainItemListAdapter) {
+    private fun subscribeUi(adapter: SmsItemListAdapter) {
         mainViewModel = getViewModel(MainViewModel::class.java, viewModelFactory)
         binding.hasItems = true
 

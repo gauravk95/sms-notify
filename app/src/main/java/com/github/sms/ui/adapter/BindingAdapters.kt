@@ -42,9 +42,14 @@ fun bindIsGone(view: View, isGone: Boolean) {
 
 @BindingAdapter("setDate")
 fun setDate(tv: TextView, time: Long?) {
-    if(time != null){
+    if (time != null) {
         tv.text = SimpleDateFormat.getDateInstance().format(Date(time))
     }
+}
+
+@BindingAdapter("setText")
+fun setText(tv: TextView, time: Int) {
+    tv.text = tv.context.getText(time)
 }
 
 @BindingAdapter("randomBackgroundTint")

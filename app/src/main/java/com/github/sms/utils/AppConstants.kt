@@ -31,4 +31,6 @@ object AppConstants {
     const val NAMED_LOCAL = "local"
 
     const val PERM_SMS_REQUEST_CODE = 45
+
+    const val HOUR_IN_MILLI: Long = 60 * 60 * 1000
 }
