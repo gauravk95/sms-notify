@@ -103,7 +103,9 @@ class MainFragment : BaseFragment() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == AppConstants.PERM_SMS_REQUEST_CODE) {
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            if (grantResults.size == 2
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED)
                 mainViewModel.loadSmsList()
             else
                 showToastMessage(getString(R.string.permission_denied))

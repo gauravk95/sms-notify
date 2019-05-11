@@ -8,6 +8,9 @@ import com.github.sms.data.models.local.SmsItem
 import com.github.sms.data.source.repository.AppDataSource
 import com.github.sms.utils.rx.SchedulerProvider
 import io.reactivex.disposables.CompositeDisposable
+import com.github.sms.utils.rx.RxEventBus
+import io.reactivex.functions.Consumer
+
 
 /**
  * ViewModel for the [MainActivity] screen.
@@ -19,6 +22,21 @@ class MainViewModel constructor(appRepository: AppDataSource,
         BaseViewModel(appRepository, schedulerProvider, compositeDisposable) {
 
     val itemList: MutableLiveData<List<SmsHolder>> = MutableLiveData()
+
+    init {
+        setupEventListeners()
+    }
+
+    private fun setupEventListeners() {
+        val disposable = RxEventBus.subscribe(Consumer {
+            if (it is SmsItem) {
+                if (!it.address.isNullOrEmpty())
+                    loadSmsList()
+            }
+        })
+
+        compositeDisposable.addAll(disposable)
+    }
 
     /**
      * Loads the sms

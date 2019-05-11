@@ -23,7 +23,8 @@ data class SmsItem(
         val address: String?,
         val message: String?,
         val readState: Int = 0, //"0" for have not read sms and "1" for have read sms
-        val time: Long) : SmsHolder {
+        val time: Long,
+        val isSelected: Boolean = false) : SmsHolder {
 
     override fun getViewType(): Int {
         return SmsView.MAIN.ordinal

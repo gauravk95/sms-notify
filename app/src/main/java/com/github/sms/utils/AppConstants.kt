@@ -30,6 +30,9 @@ object AppConstants {
     const val NAMED_PREFERENCE = "preference"
     const val NAMED_LOCAL = "local"
 
+    const val DEFAULT_NOTIFICATION_CHANNEL: String = "default_id"
+    const val INTENT_ARGS_SMS_ID: String = "arg_sms_id"
+
     const val PERM_SMS_REQUEST_CODE = 45
 
     const val HOUR_IN_MILLI: Long = 60 * 60 * 1000

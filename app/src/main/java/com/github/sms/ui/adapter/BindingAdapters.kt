@@ -43,7 +43,7 @@ fun bindIsGone(view: View, isGone: Boolean) {
 @BindingAdapter("setDate")
 fun setDate(tv: TextView, time: Long?) {
     if (time != null) {
-        tv.text = SimpleDateFormat.getDateInstance().format(Date(time))
+        tv.text = SimpleDateFormat("HH:mm  MMM dd", Locale.getDefault()).format(Date(time))
     }
 }
 

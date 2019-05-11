@@ -15,7 +15,6 @@
 */
 package com.github.sms.data.source.repository.local
 
-import android.util.ArrayMap
 import com.github.sms.data.models.local.SmsHeader
 import com.github.sms.data.models.local.SmsHolder
 import com.github.sms.data.source.db.SmsDao

@@ -54,7 +54,7 @@
             android:layout_marginEnd="@dimen/margin_16dp"
             android:gravity="end"
             android:text="@{String.valueOf(item.time), default = time}"
-            android:textColor="@color/text_color_grey"
+            android:textColor="@color/text_color_blue_grey"
             android:textSize="@dimen/text_size_caption"
             app:layout_constraintBottom_toBottomOf="@+id/sms_address"
             app:layout_constraintEnd_toEndOf="parent"
