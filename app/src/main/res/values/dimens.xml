@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="toolbar_title">16sp</dimen>
+    <dimen name="margin_8dp">8dp</dimen>
+    <dimen name="text_size_title">24sp</dimen>
+    <dimen name="margin_16dp">16dp</dimen>
+    <dimen name="padding_8dp">8dp</dimen>
+    <dimen name="max_date_width">100dp</dimen>
+    <dimen name="text_size_caption">12sp</dimen>
+    <dimen name="text_size_sub_title">18sp</dimen>
+</resources>
