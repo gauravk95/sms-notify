@@ -36,7 +36,8 @@ constructor(private val contentResolver: ContentResolver) : SmsSource {
     private fun getAllSms(): List<SmsItem> {
         val lstSms = ArrayList<SmsItem>()
         try {
-            val message = Uri.parse("content://sms/")
+            val message = Uri.parse("content://sms/inbox") //get inbox messages
+            //val message = Uri.parse("content://sms/") //get all messages
             val cursor = contentResolver.query(message, null, null, null, null)
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
