@@ -18,7 +18,6 @@ package com.github.sms.data.source.repository
 import android.support.annotation.VisibleForTesting
 import com.github.sms.data.models.local.SmsHolder
 
-import com.github.sms.data.models.local.SmsItem
 import com.github.sms.data.source.prefs.Preferences
 import com.github.sms.utils.AppConstants
 
@@ -40,7 +39,7 @@ constructor(@Named(AppConstants.NAMED_LOCAL) private val localAppDataSource: App
             private val preference: Preferences) : AppDataSource {
 
     @VisibleForTesting
-    internal var cachedItemList: List<SmsItem>? = null
+    internal var cachedItemList: List<SmsHolder>? = null
 
     /**
      * Marks the cache as invalid, to force an update the next time data is requested. This variable
@@ -50,19 +49,25 @@ constructor(@Named(AppConstants.NAMED_LOCAL) private val localAppDataSource: App
     internal var cacheIsDirty = false
 
     //get the elements from local db, and if empty get it from sever
-    private fun getItemFromLocalDB(): Flowable<List<SmsHolder>> {
+    private fun getSmsFromLocalSource(): Flowable<List<SmsHolder>> {
         return localAppDataSource
-                .getItemList()
+                .getSmsItemList(false)
+                .doOnNext {
+                    cachedItemList = it
+                    cacheIsDirty = false
+                }
     }
 
-    override fun getItemList(): Flowable<List<SmsHolder>> {
+    override fun getSmsItemList(forceRefresh: Boolean): Flowable<List<SmsHolder>> {
+        cacheIsDirty = forceRefresh
+
         // Respond immediately with cache if available and not dirty
         if (cachedItemList != null && !cacheIsDirty) {
             return Flowable.just(cachedItemList)
         }
 
         //if cache is dirty, get the data from local
-        return getItemFromLocalDB()
+        return getSmsFromLocalSource()
     }
 
 }

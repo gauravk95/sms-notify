@@ -31,7 +31,7 @@ class MainViewModel constructor(appRepository: AppDataSource,
         val disposable = RxEventBus.subscribe(Consumer {
             if (it is SmsItem) {
                 if (!it.address.isNullOrEmpty())
-                    loadSmsList()
+                    loadSmsList(true)
             }
         })
 
@@ -41,10 +41,10 @@ class MainViewModel constructor(appRepository: AppDataSource,
     /**
      * Loads the sms
      */
-    fun loadSmsList() {
+    fun loadSmsList(forceRefresh: Boolean) {
         isLoading().value = true
 
-        val disposable = dataSource.getItemList()
+        val disposable = dataSource.getSmsItemList(forceRefresh)
                 .subscribeOn(schedulerProvider.io)
                 .observeOn(schedulerProvider.ui)
                 .subscribe({

@@ -97,7 +97,7 @@ class MainFragment : BaseFragment() {
         })
 
         //try and load initially
-        mainViewModel.loadSmsList()
+        mainViewModel.loadSmsList(false)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -106,7 +106,7 @@ class MainFragment : BaseFragment() {
             if (grantResults.size == 2
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED)
-                mainViewModel.loadSmsList()
+                mainViewModel.loadSmsList(false)
             else
                 showToastMessage(getString(R.string.permission_denied))
         }

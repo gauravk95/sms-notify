@@ -26,6 +26,6 @@ import io.reactivex.Flowable
 
 interface AppDataSource {
 
-    fun getItemList() : Flowable<List<SmsHolder>>
+    fun getSmsItemList(forceRefresh: Boolean) : Flowable<List<SmsHolder>>
 
 }

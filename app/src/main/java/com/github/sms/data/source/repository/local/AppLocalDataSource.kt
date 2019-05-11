@@ -34,7 +34,7 @@ import io.reactivex.Flowable
 class AppLocalDataSource @Inject
 constructor(private val smsDao: SmsDao) : AppDataSource {
 
-    override fun getItemList(): Flowable<List<SmsHolder>> {
+    override fun getSmsItemList(forceRefresh: Boolean): Flowable<List<SmsHolder>> {
         return smsDao.getSms().map {
             val newList = mutableListOf<SmsHolder>()
             val groupMap = LinkedHashMap<TimeGroup, MutableList<SmsHolder>>()
