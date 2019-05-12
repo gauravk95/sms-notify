@@ -69,23 +69,26 @@ class MainViewModel constructor(appRepository: AppDataSource,
     private fun setupEventListeners() {
 
         // Listen for SmsUpdateEvents only
-        val disposable = RxEventBus.listen(SmsUpdateEvent::class.java).subscribe {
-            AppLogger.d("RxBus", "Got Message event ${it.action}.")
-            when (it.action) {
-                SmsUpdateAction.UPDATE -> {
-                    //update the list
-                    smsDataFactory.reset()
-                }
-                SmsUpdateAction.HIGHLIGHT -> {
-                    if (it.message != null) {
-                        //highlight the message
-                        highlightMessageTimestamp.value = it.message.timeSent
-                        //smsList.postValue(smsList.value)
-                        listUpdateAction.postValue(ListUpdateAction.SCROLL_TO_TOP)
+        val disposable = RxEventBus.listen(SmsUpdateEvent::class.java)
+                .subscribeOn(schedulerProvider.io)
+                .observeOn(schedulerProvider.ui)
+                .subscribe {
+                    AppLogger.d("RxBus", "Got Message event ${it.action}.")
+                    when (it.action) {
+                        SmsUpdateAction.UPDATE -> {
+                            //update the list
+                            smsDataFactory.reset()
+                        }
+                        SmsUpdateAction.HIGHLIGHT -> {
+                            if (it.message != null) {
+                                //highlight the message
+                                highlightMessageTimestamp.value = it.message.timeSent
+                                //smsList.postValue(smsList.value)
+                                listUpdateAction.postValue(ListUpdateAction.SCROLL_TO_TOP)
+                            }
+                        }
                     }
                 }
-            }
-        }
 
         compositeDisposable.addAll(disposable)
     }
