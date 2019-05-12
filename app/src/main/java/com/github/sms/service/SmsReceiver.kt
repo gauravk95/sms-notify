@@ -13,12 +13,13 @@ import android.provider.Telephony
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import com.github.sms.R
+import com.github.sms.data.models.event.SmsUpdateAction
+import com.github.sms.data.models.event.SmsUpdateEvent
 import com.github.sms.data.models.local.SmsItem
 import com.github.sms.ui.main.MainActivity
 import com.github.sms.utils.AppConstants
 import com.github.sms.utils.AppLogger
 import com.github.sms.utils.rx.RxEventBus
-
 
 @Suppress("DEPRECATION")
 class SmsReceiver : BroadcastReceiver() {
@@ -26,7 +27,7 @@ class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 
         if (intent.action == Telephony.Sms.Intents.SMS_RECEIVED_ACTION) {
-            var smsTimeStamp: Long? = 0
+            var smsTimestamp: Long? = -1L
             var smsSender: String? = ""
             var smsBody: String? = ""
 
@@ -35,7 +36,7 @@ class SmsReceiver : BroadcastReceiver() {
                 for (msg in Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
                     smsBody += msg.messageBody
                     smsSender = msg.displayOriginatingAddress
-                    smsTimeStamp = msg.timestampMillis
+                    smsTimestamp = msg.timestampMillis
                 }
             } else {
                 AppLogger.d(TAG, "Using deprecated api to get sms")
@@ -47,32 +48,34 @@ class SmsReceiver : BroadcastReceiver() {
                         msgs[i] = SmsMessage.createFromPdu(pdus[i] as ByteArray)
                         smsBody += msgs[i]?.messageBody
                         smsSender = msgs[0]?.originatingAddress
-                        smsTimeStamp = msgs[0]?.timestampMillis
+                        smsTimestamp = msgs[0]?.timestampMillis
                     }
                 }
             }
 
+            //NOTE: SMS_ID/SMS ICC EF Record has not been created yet, so we initialized id to some value
+            val sms = SmsItem(Integer.MAX_VALUE, smsSender, smsBody, 0, smsTimestamp ?: -1L)
             //display the notification
-            showNotification(context, smsTimeStamp, smsSender, smsBody)
+            showNotification(context, sms)
 
             //send Event broadcast
-            if (smsTimeStamp != null)
-                RxEventBus.publish(SmsItem(smsTimeStamp.toString(), smsSender, smsBody, 0, smsTimeStamp))
+            if (smsTimestamp != null)
+                RxEventBus.publish(SmsUpdateEvent(SmsUpdateAction.UPDATE))
         }
     }
 
-    private fun showNotification(context: Context, smsId: Long?, smsSender: String?, smsBody: String?) {
+    private fun showNotification(context: Context, sms: SmsItem) {
 
         //prepare the content
-        val contentTitle: String = smsSender ?: context.getString(R.string.app_name)
+        val contentTitle: String = sms.address ?: context.getString(R.string.app_name)
 
         //create a call to action
         val pendingIntent: PendingIntent
         val intent = Intent(context, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra(AppConstants.INTENT_ARGS_SMS_ID, smsId)
-        pendingIntent = PendingIntent.getActivity(context, 0, intent,
-                PendingIntent.FLAG_ONE_SHOT)
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP and Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra(AppConstants.INTENT_ARGS_SMS, sms)
+        //use FLAG_UPDATE_CURRENT to update extras in case of multiple pending intents
+        pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         //create a notification channel, for oreo and higher
         val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -89,8 +92,8 @@ class SmsReceiver : BroadcastReceiver() {
                 .setContentTitle(contentTitle)
                 .setSmallIcon(R.drawable.ic_small_notification)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
-                .setContentText(smsBody)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(smsBody))
+                .setContentText(sms.message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(sms.message))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setVibrate(longArrayOf(300, 300, 300))

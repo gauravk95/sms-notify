@@ -17,6 +17,7 @@ package com.github.sms.data.source.repository
 
 import android.support.annotation.VisibleForTesting
 import com.github.sms.data.models.local.SmsHolder
+import com.github.sms.data.models.local.SmsItem
 
 import com.github.sms.data.source.prefs.Preferences
 import com.github.sms.utils.AppConstants
@@ -69,5 +70,4 @@ constructor(@Named(AppConstants.NAMED_LOCAL) private val localAppDataSource: App
         //if cache is dirty, get the data from local
         return getSmsFromLocalSource()
     }
-
 }

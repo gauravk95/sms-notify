@@ -26,6 +26,8 @@ import android.view.ViewGroup
 
 import com.github.sms.R
 import com.github.sms.base.BaseFragment
+import com.github.sms.data.models.event.ListUpdateAction
+import com.github.sms.data.models.local.SmsItem
 import com.github.sms.databinding.FragmentMainBinding
 import com.github.sms.di.factory.AppViewModelFactory
 import com.github.sms.ui.adapter.SmsItemListAdapter
@@ -85,19 +87,31 @@ class MainFragment : BaseFragment() {
         mainViewModel = getViewModel(MainViewModel::class.java, viewModelFactory)
         binding.hasItems = true
 
-        mainViewModel.isLoading().observe(this, Observer { setProgress(it) })
-        mainViewModel.getErrorMsg().observe(this, Observer { errorMessage ->
+        mainViewModel.isLoading().observe(viewLifecycleOwner, Observer { setProgress(it) })
+        mainViewModel.getErrorMsg().observe(viewLifecycleOwner, Observer { errorMessage ->
             if (errorMessage != null) onError(errorMessage)
         })
-        mainViewModel.itemList.observe(this, Observer { items ->
+        mainViewModel.itemList.observe(viewLifecycleOwner, Observer { items ->
             val hasItems = (items != null && items.isNotEmpty())
             binding.hasItems = hasItems
             if (hasItems)
                 adapter.submitList(items)
         })
+        mainViewModel.listUpdateAction.observe(viewLifecycleOwner, Observer {
+            if (it != null)
+                when (it) {
+                    ListUpdateAction.REFRESH_DATA -> adapter.notifyDataSetChanged()
+                    ListUpdateAction.SCROLL_TO_TOP -> binding.itemRecyclerView.scrollToPosition(0)
+                }
+        })
 
         //try and load initially
+        arguments?.getSerializable(AppConstants.INTENT_ARGS_SMS)?.let {
+            mainViewModel.highlightTargetMessage = it as? SmsItem
+        }
+
         mainViewModel.loadSmsList(false)
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -113,8 +127,10 @@ class MainFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance(): MainFragment {
-            return MainFragment()
+        fun newInstance(message: SmsItem?) = MainFragment().apply {
+            arguments = Bundle().apply {
+                putSerializable(AppConstants.INTENT_ARGS_SMS, message)
+            }
         }
     }
 }

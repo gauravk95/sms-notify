@@ -17,6 +17,7 @@ package com.github.sms.data.source.db
 
 import android.content.ContentResolver
 import android.net.Uri
+import android.provider.Telephony
 import com.github.sms.data.models.local.SmsItem
 import io.reactivex.Flowable
 
@@ -42,13 +43,14 @@ constructor(private val contentResolver: ContentResolver) : SmsSource {
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     for (i in 0 until cursor.count) {
-                        val id = cursor.getString(cursor.getColumnIndexOrThrow("_id"))
-                        val address = cursor.getString(cursor.getColumnIndexOrThrow("address"))
-                        val msg = cursor.getString(cursor.getColumnIndexOrThrow("body"))
-                        val readState = cursor.getInt(cursor.getColumnIndex("read"))
-                        val time = cursor.getLong(cursor.getColumnIndexOrThrow("date"))
+                        val id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"))
+                        val address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
+                        val msg = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
+                        val readState = cursor.getInt(cursor.getColumnIndex(Telephony.Sms.READ))
+                        val time = cursor.getLong(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
+                        val timeSent = cursor.getLong(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE_SENT))
 
-                        lstSms.add(SmsItem(id, address, msg, readState, time))
+                        lstSms.add(SmsItem(id, address, msg, time, timeSent, readState))
                         cursor.moveToNext()
                     }
                 }

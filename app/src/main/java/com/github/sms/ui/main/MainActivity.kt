@@ -23,6 +23,12 @@ import com.github.sms.R
 import com.github.sms.base.BaseActivity
 import com.github.sms.utils.ext.findFragmentById
 import com.github.sms.utils.ext.setFragment
+import android.content.Intent
+import com.github.sms.data.models.event.SmsUpdateAction
+import com.github.sms.data.models.event.SmsUpdateEvent
+import com.github.sms.data.models.local.SmsItem
+import com.github.sms.utils.AppConstants
+import com.github.sms.utils.rx.RxEventBus
 
 /**
  * The main activity of the application
@@ -37,10 +43,22 @@ class MainActivity : BaseActivity() {
 
         setupToolbar()
 
+        //get the target sms messageId if available
+        val message = intent?.extras?.getSerializable(AppConstants.INTENT_ARGS_SMS) as? SmsItem
+
         val mainFragment: MainFragment? = findFragmentById(R.id.content_frame)
         if (mainFragment == null)
-           setFragment(MainFragment.newInstance(), R.id.content_frame)
+            setFragment(MainFragment.newInstance(message), R.id.content_frame)
 
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val bundle = intent.extras
+        if (bundle != null) {
+            val message = bundle.getSerializable(AppConstants.INTENT_ARGS_SMS) as? SmsItem
+            RxEventBus.publish(SmsUpdateEvent(SmsUpdateAction.HIGHLIGHT, message))
+        }
     }
 
     private fun setupToolbar() {

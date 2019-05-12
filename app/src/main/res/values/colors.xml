@@ -12,4 +12,6 @@
     <color name="text_color_orange">#ff8a65</color>
     <color name="background_light_grey">#f0f0f0</color>
     <color name="text_color_blue_grey">#78909c</color>
+
+    <color name="background_highlight">#fff3e0</color>
 </resources>

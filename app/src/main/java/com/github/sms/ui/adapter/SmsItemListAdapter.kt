@@ -71,7 +71,7 @@ class SmsItemListAdapter constructor(private val onItemClicked: (SmsItem?) -> Un
     /**
     View holder for header
      */
-    class HeaderViewHolder(private val binding: com.github.sms.databinding.ItemSmsHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
+    class HeaderViewHolder(private val binding: ItemSmsHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(curItem: SmsHeader) {
             binding.apply {

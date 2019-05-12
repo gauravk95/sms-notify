@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Google LLC
+ * Copyright 2019 Gaurav Kumar
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,17 @@ import android.content.res.ColorStateList
 import android.databinding.BindingAdapter
 import android.graphics.Color
 import android.os.Build
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.widget.ImageViewCompat
 import android.view.View
 import android.support.v7.widget.RecyclerView
+import android.util.TypedValue
 import android.widget.ImageView
 import android.widget.TextView
 import com.github.sms.R
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 @BindingAdapter("isGone")
 fun bindIsGone(view: View, isGone: Boolean) {
@@ -47,9 +48,15 @@ fun setDate(tv: TextView, time: Long?) {
     }
 }
 
-@BindingAdapter("setText")
-fun setText(tv: TextView, time: Int) {
-    tv.text = tv.context.getText(time)
+@BindingAdapter("setBgHighlight")
+fun setBgHighlight(v: View, isHighlight: Boolean?) {
+    if (isHighlight != null && isHighlight)
+        v.setBackgroundColor(ContextCompat.getColor(v.context, R.color.background_highlight))
+    else {
+        val resource = TypedValue()
+        v.context.theme.resolveAttribute(android.R.attr.selectableItemBackground, resource, true)
+        v.background = ContextCompat.getDrawable(v.context, resource.resourceId)
+    }
 }
 
 @BindingAdapter("randomBackgroundTint")

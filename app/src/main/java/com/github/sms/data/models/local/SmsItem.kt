@@ -15,16 +15,19 @@
 */
 package com.github.sms.data.models.local
 
+import java.io.Serializable
+
 /**
  * Created by gk
  */
 data class SmsItem(
-        val id: String,
+        val id: Int,
         val address: String?,
         val message: String?,
-        val readState: Int = 0, //"0" for have not read sms and "1" for have read sms
         val time: Long,
-        val isSelected: Boolean = false) : SmsHolder {
+        val timeSent: Long,
+        val readState: Int = 0, //"0" for have not read sms and "1" for have read sms
+        var isHighlighted: Boolean = false) : SmsHolder, Serializable {
 
     override fun getViewType(): Int {
         return SmsView.MAIN.ordinal
