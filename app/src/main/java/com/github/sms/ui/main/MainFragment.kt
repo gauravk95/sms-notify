@@ -28,6 +28,7 @@ import com.github.sms.R
 import com.github.sms.base.BaseFragment
 import com.github.sms.data.models.event.ListUpdateAction
 import com.github.sms.data.models.local.SmsItem
+import com.github.sms.data.source.state.LoadingStatus
 import com.github.sms.databinding.FragmentMainBinding
 import com.github.sms.di.factory.AppViewModelFactory
 import com.github.sms.ui.adapter.SmsItemListAdapter
@@ -87,15 +88,26 @@ class MainFragment : BaseFragment() {
         mainViewModel = getViewModel(MainViewModel::class.java, viewModelFactory)
         binding.hasItems = true
 
-        mainViewModel.isLoading().observe(viewLifecycleOwner, Observer { setProgress(it) })
-        mainViewModel.getErrorMsg().observe(viewLifecycleOwner, Observer { errorMessage ->
-            if (errorMessage != null) onError(errorMessage)
-        })
-        mainViewModel.itemList.observe(viewLifecycleOwner, Observer { items ->
+        //set observers
+        mainViewModel.smsList.observe(viewLifecycleOwner, Observer { items ->
             val hasItems = (items != null && items.isNotEmpty())
-            binding.hasItems = hasItems
-            if (hasItems)
-                adapter.submitList(items)
+            if (hasItems) adapter.submitList(items)
+        })
+        mainViewModel.loadingState.observe(viewLifecycleOwner, Observer {
+            when (it?.loadingStatus) {
+                LoadingStatus.FIRST_RUNNING -> binding.isLoading = true
+                LoadingStatus.FIRST_EMPTY, LoadingStatus.FIRST_FAILED -> {
+                    binding.hasItems = false
+                    binding.isLoading = false
+                }
+                LoadingStatus.FIRST_SUCCESS -> {
+                    binding.hasItems = true
+                    binding.isLoading = false
+                }
+                LoadingStatus.RUNNING -> binding.isNextLoading = true
+                LoadingStatus.SUCCESS, LoadingStatus.FAILED -> binding.isNextLoading = false
+                else -> binding.isLoading = false
+            }
         })
         mainViewModel.listUpdateAction.observe(viewLifecycleOwner, Observer {
             if (it != null)
@@ -104,14 +116,16 @@ class MainFragment : BaseFragment() {
                     ListUpdateAction.SCROLL_TO_TOP -> binding.itemRecyclerView.scrollToPosition(0)
                 }
         })
+        mainViewModel.highlightMessageTimestamp.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                adapter.updateHighlightMessage(it)
+            }
+        })
 
         //try and load initially
         arguments?.getSerializable(AppConstants.INTENT_ARGS_SMS)?.let {
-            mainViewModel.highlightTargetMessage = it as? SmsItem
+            mainViewModel.updateHighlight((it as? SmsItem)?.timeSent)
         }
-
-        mainViewModel.loadSmsList(false)
-
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -120,7 +134,7 @@ class MainFragment : BaseFragment() {
             if (grantResults.size == 2
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED)
-                mainViewModel.loadSmsList(false)
+                mainViewModel.reload()
             else
                 showToastMessage(getString(R.string.permission_denied))
         }

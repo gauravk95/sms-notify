@@ -26,8 +26,8 @@ data class SmsItem(
         val message: String?,
         val time: Long,
         val timeSent: Long,
-        val readState: Int = 0, //"0" for have not read sms and "1" for have read sms
-        var isHighlighted: Boolean = false) : SmsHolder, Serializable {
+        val readState: Int = 0 //"0" for have not read sms and "1" for have read sms
+        ) : SmsHolder, Serializable {
 
     override fun getViewType(): Int {
         return SmsView.MAIN.ordinal

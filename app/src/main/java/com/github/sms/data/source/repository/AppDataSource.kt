@@ -16,7 +16,6 @@
 package com.github.sms.data.source.repository
 
 import com.github.sms.data.models.local.SmsHolder
-import com.github.sms.data.models.local.SmsItem
 
 import io.reactivex.Flowable
 
@@ -27,5 +26,7 @@ import io.reactivex.Flowable
 interface AppDataSource {
 
     fun getSmsItemList(forceRefresh: Boolean) : Flowable<List<SmsHolder>>
+
+    fun getPagedSmsItemList(page: Int, pageSize: Int) : Flowable<List<SmsHolder>>
 
 }

@@ -8,13 +8,17 @@
         <variable
             name="item"
             type="com.github.sms.data.models.local.SmsItem" />
+
+        <variable
+            name="highlight"
+            type="Boolean" />
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:selectableItemBackground"
-        app:setBgHighlight="@{item.isHighlighted}">
+        app:setBgHighlight="@{highlight}">
 
         <ImageView
             android:id="@+id/sms_icon"

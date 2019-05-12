@@ -37,5 +37,5 @@ object AppConstants {
 
     const val HOUR_IN_MILLI: Long = 60 * 60 * 1000
 
-    const val DEFAULT_MESSAGE_ID: Int = -1
+    const val PAGE_SIZE: Int = 20
 }

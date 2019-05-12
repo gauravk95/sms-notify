@@ -57,6 +57,9 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
     kapt "android.arch.lifecycle:compiler:$lifecycleVersion"
 
+    //paging
+    implementation "android.arch.paging:runtime:$archCompPagingVersion"
+
     //kotlin support
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 

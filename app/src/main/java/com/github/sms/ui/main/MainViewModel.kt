@@ -1,20 +1,26 @@
 package com.github.sms.ui.main
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import com.github.sms.R
+import android.arch.lifecycle.Transformations
+import android.arch.paging.LivePagedListBuilder
+import android.arch.paging.PagedList
 import com.github.sms.base.BaseViewModel
 import com.github.sms.data.models.event.ListUpdateAction
 import com.github.sms.data.models.event.SmsUpdateAction
 import com.github.sms.data.models.event.SmsUpdateEvent
-import com.github.sms.data.models.local.SmsHolder
 import com.github.sms.data.models.local.SmsItem
+import com.github.sms.data.source.factory.SmsDataFactory
 import com.github.sms.data.source.repository.AppDataSource
+import com.github.sms.data.source.state.LoadingState
 import com.github.sms.service.SmsReceiver
+import com.github.sms.utils.AppConstants
+import com.github.sms.utils.AppLogger
 import com.github.sms.utils.lifecycle.SingleLiveEvent
 import com.github.sms.utils.rx.SchedulerProvider
 import io.reactivex.disposables.CompositeDisposable
 import com.github.sms.utils.rx.RxEventBus
-import io.reactivex.functions.Consumer
+import java.util.concurrent.Executors
 
 /**
  * ViewModel for the [MainActivity] screen.
@@ -25,10 +31,34 @@ class MainViewModel constructor(appRepository: AppDataSource,
                                 compositeDisposable: CompositeDisposable) :
         BaseViewModel(appRepository, schedulerProvider, compositeDisposable) {
 
-    val itemList: MutableLiveData<List<SmsHolder>> = MutableLiveData()
     val listUpdateAction: SingleLiveEvent<ListUpdateAction> = SingleLiveEvent()
-
     var highlightTargetMessage: SmsItem? = null
+
+    /**
+     * [highlightMessageTimestamp] is being used to identify selected sms when received by [SmsReceiver]
+     *
+     * NOTE: When message is received by [SmsReceiver], ICC EF Record Id is not created
+     * To find the correct message we use sentTimeStamp and senderAddress, content
+     * Maybe better way to do this?
+     */
+    val highlightMessageTimestamp: MutableLiveData<Long> = MutableLiveData()
+
+    private val smsDataFactory = SmsDataFactory(appRepository, compositeDisposable)
+
+    val smsList by lazy {
+        val pagedListConfig = PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setInitialLoadSizeHint(AppConstants.PAGE_SIZE)
+                .setPageSize(AppConstants.PAGE_SIZE).build()
+
+        LivePagedListBuilder(smsDataFactory, pagedListConfig)
+                .setFetchExecutor(Executors.newFixedThreadPool(2))
+                .build()
+    }
+
+    val loadingState: LiveData<LoadingState> = Transformations.switchMap(smsDataFactory.mutableLiveData) {
+        it.loadingState
+    }
 
     init {
         setupEventListeners()
@@ -38,67 +68,38 @@ class MainViewModel constructor(appRepository: AppDataSource,
      * Listen to Events via [RxEventBus]
      */
     private fun setupEventListeners() {
-        val disposable = RxEventBus.subscribe(Consumer {
-            if (it is SmsUpdateEvent) {
-                when (it.action) {
-                    SmsUpdateAction.UPDATE -> {
-                        //update the list
-                        loadSmsList(true)
-                    }
-                    SmsUpdateAction.HIGHLIGHT -> {
+
+        // Listen for SmsUpdateEvents only
+        val disposable = RxEventBus.listen(SmsUpdateEvent::class.java).subscribe {
+            AppLogger.d("RxBus", "Got Message event ${it.action}.")
+            when (it.action) {
+                SmsUpdateAction.UPDATE -> {
+                    //update the list
+                    smsDataFactory.reset()
+                }
+                SmsUpdateAction.HIGHLIGHT -> {
+                    if (it.message != null) {
                         //make the starting highlightTarget null
                         highlightTargetMessage = null
-                        //highlight the new message
-                        highlightTargetSms(it.message, itemList.value)
-                        itemList.postValue(itemList.value)
+                        //highlight the message
+                        highlightMessageTimestamp.value = it.message.timeSent
+                        //smsList.postValue(smsList.value)
                         listUpdateAction.postValue(ListUpdateAction.SCROLL_TO_TOP)
                     }
                 }
             }
-        })
+        }
 
         compositeDisposable.addAll(disposable)
     }
 
-    /**
-     * Loads the sms
-     */
-    fun loadSmsList(forceRefresh: Boolean) {
-        isLoading().value = true
-
-        val disposable = dataSource.getSmsItemList(forceRefresh)
-                .subscribeOn(schedulerProvider.io)
-                .observeOn(schedulerProvider.ui)
-                .subscribe({
-                    if (highlightTargetMessage != null)
-                        highlightTargetSms(highlightTargetMessage, it)
-                    isLoading().value = false
-                    itemList.value = it
-                }, {
-                    isLoading().value = false
-                    getErrorMsg().value = R.string.default_error_message
-                })
-
-        compositeDisposable.add(disposable)
+    fun reload() {
+        smsDataFactory.reset()
     }
 
-    /**
-     * Finds the Sms with [message] and highlights it
-     *
-     * NOTE: When message is received by [SmsReceiver], ICC EF Record Id is not created
-     * To find the correct message we use sentTimeStamp and senderAddress, content can also help
-     * Maybe better way to do this?
-     */
-    private fun highlightTargetSms(message: SmsItem?, currentSmsList: List<SmsHolder>?) {
-        if (message == null) return
-
-        if (currentSmsList != null) {
-            for (item in currentSmsList)
-                if (item is SmsItem)
-                    item.isHighlighted =
-                            (item.timeSent == message.timeSent
-                                    && item.address == message.address)
-        }
+    fun updateHighlight(timeSent: Long?) {
+        if (timeSent != null)
+            highlightMessageTimestamp.value = timeSent
     }
 
 }

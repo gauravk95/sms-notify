@@ -15,7 +15,7 @@
 */
 package com.github.sms.ui.adapter
 
-import android.support.v7.recyclerview.extensions.ListAdapter
+import android.arch.paging.PagedListAdapter
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -33,11 +33,13 @@ import com.github.sms.databinding.ItemSmsHeaderBinding
  * Created by gk
  */
 class SmsItemListAdapter constructor(private val onItemClicked: (SmsItem?) -> Unit) :
-        ListAdapter<SmsHolder, RecyclerView.ViewHolder>(SmsItemDiffCallback()) {
+        PagedListAdapter<SmsHolder, RecyclerView.ViewHolder>(SmsItemDiffCallback()) {
+
+    private var highlightMessageTimeStamp: Long? = -1L
 
     override fun onBindViewHolder(view: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
-        when (item.getViewType()) {
+        when (item?.getViewType()) {
             SmsView.HEADER.ordinal -> {
                 val holderHeader = view as HeaderViewHolder
                 holderHeader.apply {
@@ -48,7 +50,7 @@ class SmsItemListAdapter constructor(private val onItemClicked: (SmsItem?) -> Un
             SmsView.MAIN.ordinal -> {
                 val holderMain = view as MainViewHolder
                 holderMain.apply {
-                    bind(item as SmsItem, onItemClicked)
+                    bind(item as SmsItem, highlightMessageTimeStamp, onItemClicked)
                     itemView.tag = item
                 }
             }
@@ -65,7 +67,12 @@ class SmsItemListAdapter constructor(private val onItemClicked: (SmsItem?) -> Un
     }
 
     override fun getItemViewType(position: Int): Int {
-        return getItem(position).getViewType()
+        return getItem(position)?.getViewType() ?: SmsView.MAIN.ordinal
+    }
+
+    fun updateHighlightMessage(highlightMessageTimeStamp: Long) {
+        this.highlightMessageTimeStamp = highlightMessageTimeStamp
+        notifyDataSetChanged()
     }
 
     /**
@@ -86,10 +93,12 @@ class SmsItemListAdapter constructor(private val onItemClicked: (SmsItem?) -> Un
      */
     class MainViewHolder(private val binding: ItemSmsBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(curItem: SmsItem, onItemClicked: (SmsItem?) -> Unit) {
+        fun bind(curItem: SmsItem, highlightMessageTimeStamp: Long?, onItemClicked: (SmsItem?) -> Unit) {
             binding.apply {
                 root.setOnClickListener { onItemClicked(curItem) }
                 item = curItem
+                if (highlightMessageTimeStamp != null)
+                    highlight = (curItem.timeSent == highlightMessageTimeStamp)
                 executePendingBindings()
             }
         }

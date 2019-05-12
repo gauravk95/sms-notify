@@ -69,4 +69,8 @@ constructor(private val smsDao: SmsDao) : AppDataSource {
         }
     }
 
+    //TODO: Update this to provide paged sms list
+    override fun getPagedSmsItemList(page: Int, pageSize: Int): Flowable<List<SmsHolder>> {
+        return Flowable.just(listOf())
+    }
 }
