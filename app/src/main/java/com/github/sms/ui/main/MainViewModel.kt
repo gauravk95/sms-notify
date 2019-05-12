@@ -32,7 +32,6 @@ class MainViewModel constructor(appRepository: AppDataSource,
         BaseViewModel(appRepository, schedulerProvider, compositeDisposable) {
 
     val listUpdateAction: SingleLiveEvent<ListUpdateAction> = SingleLiveEvent()
-    var highlightTargetMessage: SmsItem? = null
 
     /**
      * [highlightMessageTimestamp] is being used to identify selected sms when received by [SmsReceiver]
@@ -79,8 +78,6 @@ class MainViewModel constructor(appRepository: AppDataSource,
                 }
                 SmsUpdateAction.HIGHLIGHT -> {
                     if (it.message != null) {
-                        //make the starting highlightTarget null
-                        highlightTargetMessage = null
                         //highlight the message
                         highlightMessageTimestamp.value = it.message.timeSent
                         //smsList.postValue(smsList.value)
