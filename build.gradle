@@ -53,6 +53,7 @@ ext {
 
     //test dependencies
     expressoVersion = '3.0.1'
+    mockitoVersion = '2.8.9'
     testRunnerVersion = '1.0.1'
     jUnitVersion = '4.12'
 
