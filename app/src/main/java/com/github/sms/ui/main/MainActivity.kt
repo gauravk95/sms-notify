@@ -33,6 +33,8 @@ import com.github.sms.utils.rx.RxEventBus
 /**
  * The main activity of the application
  *
+ * TODO: Ask permission to make this app, default messaging app to allow SYSTEM_PROTECTED_PERMISSION - android.permission.BROADCAST_SMS
+ *
  * Created by gk
  */
 class MainActivity : BaseActivity() {
