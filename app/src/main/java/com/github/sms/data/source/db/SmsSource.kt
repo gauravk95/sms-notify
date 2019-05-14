@@ -18,12 +18,6 @@ package com.github.sms.data.source.db
 import com.github.sms.data.models.local.SmsItem
 import io.reactivex.Flowable
 
-/**
- * Data access objects for connection to SQLite DB using Room
- *
- * Created by gk
- */
-
 interface SmsSource {
     fun getSms(): Flowable<List<SmsItem>>
 }

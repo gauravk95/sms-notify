@@ -30,7 +30,7 @@ import com.github.sms.di.component.ActivityComponent
 import com.github.sms.utils.ext.createProgressDialog
 
 /**
- * Acts a Base Fragment class for all other [Fragment] which will act as View part of MVP
+ * Acts a Base Fragment class for all other [Fragment] which will act as View part of MVVM
  *
  * Created by gk
  */

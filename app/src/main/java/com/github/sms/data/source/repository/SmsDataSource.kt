@@ -23,7 +23,7 @@ import com.github.sms.data.source.state.LoadingState
 import io.reactivex.disposables.CompositeDisposable
 
 /**
- * Pull Request Data Source for Paged Loading
+ * Sms Data Source for Paged Loading
  *
  * Created by gk
  */

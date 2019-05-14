@@ -47,8 +47,7 @@ class MainApplication : Application() {
 
         instance = this
 
-        (instance as MainApplication).initializeInstance()
-
+        initializeInstance()
     }
 
     // Here we do one-off initialisation which should apply to all activities

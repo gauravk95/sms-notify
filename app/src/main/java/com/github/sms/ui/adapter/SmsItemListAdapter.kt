@@ -28,7 +28,7 @@ import com.github.sms.databinding.ItemSmsBinding
 import com.github.sms.databinding.ItemSmsHeaderBinding
 
 /**
- * Adapter that used to display [SmsHolder] in a recycler view
+ * Adapter that is used to display [SmsHolder] in a recycler view
  *
  * Created by gk
  */

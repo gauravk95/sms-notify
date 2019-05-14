@@ -9,7 +9,6 @@ import com.github.sms.base.BaseViewModel
 import com.github.sms.data.models.event.ListUpdateAction
 import com.github.sms.data.models.event.SmsUpdateAction
 import com.github.sms.data.models.event.SmsUpdateEvent
-import com.github.sms.data.models.local.SmsItem
 import com.github.sms.data.source.factory.SmsDataFactory
 import com.github.sms.data.source.repository.AppDataSource
 import com.github.sms.data.source.state.LoadingState
@@ -37,7 +36,7 @@ class MainViewModel constructor(appRepository: AppDataSource,
      * [highlightMessageTimestamp] is being used to identify selected sms when received by [SmsReceiver]
      *
      * NOTE: When message is received by [SmsReceiver], ICC EF Record Id is not created
-     * To find the correct message we use sentTimeStamp and senderAddress, content
+     * To find the correct message we use sentTimeStamp/senderAddress/content
      * Maybe better way to do this?
      */
     val highlightMessageTimestamp: MutableLiveData<Long> = MutableLiveData()

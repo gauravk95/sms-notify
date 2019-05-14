@@ -59,6 +59,9 @@ constructor(@Named(AppConstants.NAMED_LOCAL) private val localAppDataSource: App
     }
 
     override fun getSmsItemList(forceRefresh: Boolean): Flowable<List<SmsHolder>> {
+        //force cache invalid
+        if (forceRefresh) cacheIsDirty = true
+
         // Respond immediately with cache if available and not dirty
         if (cachedItemList != null && !cacheIsDirty) {
             return Flowable.just(cachedItemList)

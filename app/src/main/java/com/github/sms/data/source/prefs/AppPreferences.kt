@@ -34,7 +34,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 /**
- * An Helper class for Shared Preferences
+ * A Helper class for Shared Preferences
  *
  * Created by gk.
  */

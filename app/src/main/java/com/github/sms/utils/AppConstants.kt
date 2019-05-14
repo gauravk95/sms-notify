@@ -18,7 +18,7 @@ package com.github.sms.utils
 /**
  * Constants that will be used through the app
  *
- * NOTE: use @JvmField] if using java with kotlin to avoid [AppConstants.INSTANCE.<name_access>]
+ * NOTE: use [@JvmField] if using java with kotlin to avoid [AppConstants.INSTANCE.<name_access>]
  *
  * Created by gk
  */
